@@ -250,12 +250,16 @@ class TBNTester:
                             cat_images = torch.cat((src_cat_images[:, 0:3, :, :],
                                                     model_out[0][:, 0:3, :, :], tgt_rgb_image[:, 0:3, :, :]), 3)
 
+                    pred_image = model_out[0][:, 0:3, :, :][0].cpu().detach().numpy().transpose(1,2,0)
+                    true_image = tgt_rgb_image[:, 0:3, :, :][0].cpu().detach().numpy().transpose(1,2,0)
                     for outImgIdx in range(crnt_batch_size):
                         outputFrame = cat_images[outImgIdx, :, :, :]
                         out_str = "%05d" % (self.args.batch_size * self.out_batch_idx + outImgIdx,)
-                        scipy.misc.imsave(self.args.img_out_dir + '/' + str(out_str) + '_out.png',
-                                          np.squeeze(np.transpose(outputFrame.cpu().detach().numpy(),
-                                                                  (1, 2, 0))))
+                        # scipy.misc.imsave(self.args.img_out_dir + '/' + str(out_str) + '_out.png',
+                        #                   np.squeeze(np.transpose(outputFrame.cpu().detach().numpy(),
+                        #                                           (1, 2, 0))))
+                        scipy.misc.imsave(self.args.img_out_dir + '/' + str(out_str) + '_pred.png', pred_image)
+                        scipy.misc.imsave(self.args.img_out_dir + '/' + str(out_str) + '_true.png', true_image)
 
                     self.out_batch_idx = self.out_batch_idx + 1
 
