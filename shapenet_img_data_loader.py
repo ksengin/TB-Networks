@@ -12,7 +12,8 @@ import torch.nn as nn
 
 from torch.utils.data import Dataset, DataLoader
 
-__PATH__ = './datasets/shapenet'
+# __PATH__ = './datasets/shapenet'
+__PATH__ = '~/Documents/datasets/nvs_dataset'
 ang_interval = 10
 ang_skip = 2
 rs = np.random.RandomState(123)
@@ -24,7 +25,7 @@ class ImgDataset(Dataset):
                  max_examples=None, is_train=True,
                  dataset_name='chair', clamp_elevation=False,
                  input_width=80, input_height=80, concat_mask=False,
-                 img_path='./datasets/shapenet', random_pairs=True,
+                 img_path=__PATH__, random_pairs=True,
                  use_file_list=False, args=None):
         self._ids = list(ids)
         self.name = name
@@ -256,7 +257,7 @@ class ImgDataset(Dataset):
 
 def create_default_splits(n, is_train=True, dataset_name='chair',
                           input_width=80, input_height=80, concat_mask=False,
-                          shuffle_train=True, shuffle_test=True, img_path='./datasets/shapenet', args=None):
+                          shuffle_train=True, shuffle_test=True, img_path=__PATH__, args=None):
     ids_train, ids_test = all_ids(dataset_name=dataset_name, shuffle_train=shuffle_train, shuffle_test=shuffle_test)
 
     dataset_train = ImgDataset(ids_train, n, name='train', is_train=is_train, dataset_name=dataset_name,
