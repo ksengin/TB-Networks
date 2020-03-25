@@ -163,6 +163,8 @@ class ArgLoader(object):
                             help='Enable elevation variation in input and output images.')
         parser.add_argument('--elev_transform_threshold', type=float, default=0.5,
                             help='Probability of using variable elevations in input and output images.')
+        parser.add_argument('--test_h5file', type=str,
+                            help='Read the test objects from an h5 file')
 
         args = parser.parse_args()
 

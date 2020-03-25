@@ -13,7 +13,7 @@ import torch.nn as nn
 from torch.utils.data import Dataset, DataLoader
 
 # __PATH__ = './datasets/shapenet'
-__PATH__ = '~/Documents/datasets/nvs_dataset'
+__PATH__ = '/home/ksen/Documents/datasets/nvs_dataset'
 ang_interval = 10
 ang_skip = 2
 rs = np.random.RandomState(123)
@@ -40,12 +40,30 @@ class ImgDataset(Dataset):
         else:
             self.bound = int(360 / ang_interval + 1)
 
-        if self.use_file_list:
+        if self.use_file_list  and self.args.test_h5file is None:
             with open(osp.join('testing_tuple_lists/id_' + dataset_name + '_random_elevation.txt'), 'r') as fp:
                 self.ids_files = [s.strip() for s in fp.readlines() if s]
                 self.ids_files_tgt = [s.split(' ')[0] for s in self.ids_files if s]
                 self.ids_files_src = [s.split(' ')[1] for s in self.ids_files if s]
                 self.ids_files_all = [s.split(' ') for s in self.ids_files if s]
+        
+        elif self.use_file_list and self.args.test_h5file is not None:
+            import h5py
+            h5file = h5py.File(self.args.test_h5file, 'r')
+
+            model_names = np.char.array(h5file['ModelNames'][:])
+            model_names = np.expand_dims(np.repeat(model_names, 2, -1), -1)
+            azimuth_angles = np.char.array(h5file['Azimuths'][:])
+            elevation_angles = np.char.array(h5file['Elevations'][:])
+            h5file.close()
+
+            underscore = np.char.chararray(azimuth_angles.shape)
+            underscore[:] = '_'
+            image_ids_char = model_names + underscore + azimuth_angles + underscore + elevation_angles
+            image_ids = np.asarray(image_ids_char).astype(np.str).squeeze()
+
+            self.ids_files_all = image_ids.tolist()
+        
         else:
             self.ids_files = None
             self.ids_files_tgt = None
@@ -238,7 +256,7 @@ class ImgDataset(Dataset):
 
     def __len__(self):
         if self.use_file_list:
-            return len(self.ids_files)
+            return len(self.ids_files_all)
 
         if self.clamp_elevation:
             return self.num_pair_samples * int(len(self.ids) / self.num_elevations)
