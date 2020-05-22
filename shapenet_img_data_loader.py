@@ -53,8 +53,9 @@ class ImgDataset(Dataset):
 
             model_names = np.char.array(h5file['ModelNames'][:])
             model_names = np.expand_dims(np.repeat(model_names, 2, -1), -1)
-            azimuth_angles = np.char.array(h5file['Azimuths'][:])
-            elevation_angles = np.char.array(h5file['Elevations'][:])
+            azimuth_angles = np.char.array(h5file['Azimuths'][:])[:,[1,0]]
+            elevation_angles = np.char.array(h5file['Elevations'][:])[:,[1,0]]
+            import pdb; pdb.set_trace()
             h5file.close()
 
             underscore = np.char.chararray(azimuth_angles.shape)
